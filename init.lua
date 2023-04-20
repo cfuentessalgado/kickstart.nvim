@@ -599,6 +599,15 @@ cmp.setup {
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
   },
+  -- window = {
+  --   documentation = {
+  --     border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+  --   },
+  -- },
+  -- experimental = {
+  --   ghost_text = true,
+  --   native_menu = false,
+  -- },
 }
 
 require("nvim-autopairs").setup {}
