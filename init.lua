@@ -170,6 +170,9 @@ require('lazy').setup({
     build = ":TSUpdate",
   },
 
+  {
+    "windwp/nvim-autopairs",
+  },
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
@@ -227,6 +230,56 @@ vim.o.completeopt = 'menuone,noselect'
 
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
+local options = {
+  backup = false, -- creates a backup file
+  clipboard = "unnamedplus", -- allows neovim to access the system clipboard
+  completeopt = { "menuone", "noselect" }, -- mostly just for cmp
+  -- conceallevel = 0, -- so that `` is visible in markdown files
+  fileencoding = "utf-8", -- the encoding written to a file
+  ignorecase = true, -- ignore case in search patterns
+  mouse = "a", -- a = all mouse events nvi = normal, visual, insert
+  pumheight = 10, -- pop up menu height
+  showmode = false, -- we don't need to see things like -- INSERT -- anymore
+  showtabline = 0, -- always show tabs 2 yes 0 no
+  smartcase = true, -- smart case
+  smartindent = true, -- make indenting smarter again
+  splitbelow = true, -- force all horizontal splits to go below current window
+  splitright = true, -- force all vertical splits to go to the right of current window
+  -- termguicolors = true,                    -- set term gui colors (most terminals support this)
+  timeoutlen = 100, -- time to wait for a mapped sequence to complete (in milliseconds)
+  updatetime = 50, -- faster completion (4000ms default)
+  writebackup = false, -- if a file is being edited by another program (or was written to file while editing with another program), it is not allowed to be edited
+  expandtab = true, -- convert tabs to spaces
+  cursorline = true, -- highlight the current line
+  number = true, -- set numbered lines
+  numberwidth = 2, -- set number column width to 2 {default 4}
+  signcolumn = "yes", -- always show the sign column, otherwise it would shift the text each time
+  wrap = false, -- display lines as one long line
+  sidescrolloff = 8,
+  nu = true,
+  -- guicursor = "",
+  relativenumber = true,
+  -- tabstop = 4,
+  -- softtabstop = 4,
+  -- shiftwidth = 4,
+  swapfile = false,
+  undodir = os.getenv("HOME") .. "/.vim/undodir",
+  undofile = true,
+  hlsearch = false,
+  incsearch = true,
+  termguicolors = true,
+  scrolloff = 8,
+  cmdheight = 1,
+  winbar = "%= %m%f",
+  -- background = "dark",
+  -- updatetime = 50,
+  --colorcolumn = "80",
+}
+
+vim.opt.isfname:append("@-@")
+for k, val in pairs(options) do
+  vim.opt[k] = val
+end
 
 -- [[ Basic Keymaps ]]
 
@@ -237,6 +290,9 @@ vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 -- Remap for dealing with word wrap
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+vim.api.nvim_set_keymap("v", "K", ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("v", "J", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("v", "<leader>y", '"+y', { noremap = true, silent = true })
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
@@ -260,6 +316,21 @@ require('telescope').setup {
       },
     },
   },
+  pickers = {
+    git_files = {
+      show_untracked = true
+    },
+    live_grep = {
+      additional_args = function()
+        return { '--hidden' }
+      end
+    },
+    grep_string = {
+      additional_args = function()
+        return { '--hidden' }
+      end
+    }
+  }
 }
 
 -- Enable telescope fzf native, if installed
@@ -281,12 +352,15 @@ vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
+vim.keymap.set('n', '<leader>g', function()
+  require('telescope.builtin').grep_string({ search = vim.fn.input("Grep > ") })
+end, {})
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim' },
+  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'php', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim' },
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
   auto_install = false,
@@ -487,6 +561,8 @@ cmp.setup {
     { name = 'luasnip' },
   },
 }
+
+require("nvim-autopairs").setup {}
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
