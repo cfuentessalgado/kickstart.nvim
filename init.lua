@@ -640,5 +640,9 @@ cmp.setup {
 
 require("nvim-autopairs").setup {}
 
+-- Set HTML syntax highlighting for .blade.php files
+vim.api.nvim_command('autocmd BufNewFile,BufRead *.blade.php set syntax=html')
+
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
