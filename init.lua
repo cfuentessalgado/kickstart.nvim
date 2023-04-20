@@ -152,10 +152,10 @@ require('lazy').setup({
 
   { -- Theme inspired by Atom
     'navarasu/onedark.nvim',
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'onedark'
-    end,
+    -- priority = 1000,
+    -- config = function()
+    --   vim.cmd.colorscheme 'onedark'
+    -- end,
   },
 
   { -- Set lualine as statusline
@@ -164,7 +164,7 @@ require('lazy').setup({
     opts = {
       options = {
         icons_enabled = false,
-        theme = 'onedark',
+        theme = 'auto',
         component_separators = '|',
         section_separators = '',
       },
@@ -211,6 +211,13 @@ require('lazy').setup({
   {
     "windwp/nvim-autopairs",
   },
+  { 
+    'rebelot/kanagawa.nvim',
+    priority = 1000,
+    config = function()
+      vim.cmd.colorscheme 'kanagawa-wave'
+    end,
+},
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
