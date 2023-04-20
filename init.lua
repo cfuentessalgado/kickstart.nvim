@@ -92,7 +92,17 @@ require('lazy').setup({
       'folke/neodev.nvim',
     },
   },
-
+  {
+    "zbirenbaum/copilot.lua",
+    opts = {
+      suggestion = { enabled = false },
+      panel = { enabled = false },
+    }
+  },
+  {
+    "zbirenbaum/copilot-cmp",
+    dependencies = { "zbirenbaum/copilot.lua" },
+  },
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
     dependencies = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip' },
@@ -351,7 +361,7 @@ end
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
 vim.keymap.set({ 'n', 'v' }, '<C-t>', '<cmd>ToggleTerm<cr>')
-vim.keymap.set({ 'n'}, '<leader>e', '<cmd>NvimTreeToggle<cr>')
+vim.keymap.set({ 'n' }, '<leader>e', '<cmd>NvimTreeToggle<cr>')
 
 -- Remap for dealing with word wrap
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
@@ -587,7 +597,12 @@ mason_lspconfig.setup_handlers {
 -- nvim-cmp setup
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
-
+-- If you want insert `(` after select function or method item
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+cmp.event:on(
+  'confirm_done',
+  cmp_autopairs.on_confirm_done()
+)
 luasnip.config.setup {}
 
 cmp.setup {
@@ -626,6 +641,7 @@ cmp.setup {
   sources = {
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
+    { name = 'copilot' },
   },
   -- window = {
   --   documentation = {
@@ -639,10 +655,10 @@ cmp.setup {
 }
 
 require("nvim-autopairs").setup {}
+require("copilot_cmp").setup()
 
 -- Set HTML syntax highlighting for .blade.php files
 vim.api.nvim_command('autocmd BufNewFile,BufRead *.blade.php set syntax=html')
-
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
