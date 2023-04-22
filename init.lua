@@ -247,6 +247,15 @@ require('lazy').setup({
       vim.cmd.colorscheme 'kanagawa-wave'
     end,
   },
+  {
+    "nvim-neotest/neotest",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "antoinemadec/FixCursorHold.nvim",
+      'olimorris/neotest-phpunit',
+    },
+  },
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
@@ -657,8 +666,29 @@ cmp.setup {
 require("nvim-autopairs").setup {}
 require("copilot_cmp").setup()
 
+require('neotest').setup({
+  adapters = { require('neotest-phpunit') },
+})
+
 -- Set HTML syntax highlighting for .blade.php files
 vim.api.nvim_command('autocmd BufNewFile,BufRead *.blade.php set syntax=html')
+
+-- create user command that setups neotest-php with the binary phpunit instead of ./vendor/bin/phpunit
+vim.api.nvim_create_user_command('RunLaravelTestFileDocker', function(_)
+  require('neotest').setup({
+    adapters = {
+      require('neotest-phpunit')({
+        get_phpunit_cmd = function()
+          return '/home/cfuentes/.local/bin/phpunitd'
+        end
+      })
+    },
+  })
+
+  require("neotest").run.run(vim.fn.expand("%"))
+
+end, { desc = 'Run test file with docker' })
+
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
