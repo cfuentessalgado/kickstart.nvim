@@ -186,6 +186,7 @@ require('lazy').setup({
     --   vim.cmd.colorscheme 'onedark'
     -- end,
   },
+  { "catppuccin/nvim", name = "catppuccin" },
 
   { -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
@@ -244,7 +245,7 @@ require('lazy').setup({
     'rebelot/kanagawa.nvim',
     priority = 1000,
     config = function()
-      vim.cmd.colorscheme 'kanagawa-wave'
+      vim.cmd.colorscheme 'catppuccin'
     end,
   },
   {
@@ -441,6 +442,7 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 vim.keymap.set('n', '<leader>g', function()
   require('telescope.builtin').grep_string({ search = vim.fn.input("Grep > ") })
 end, {})
+vim.keymap.set('n', '<F3>', require('telescope.builtin').lsp_document_symbols, { desc = 'LSP Document Symbols' })
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
@@ -676,6 +678,7 @@ vim.api.nvim_command('autocmd BufNewFile,BufRead *.blade.php set syntax=html')
 -- create user command that setups neotest-php with the binary phpunit instead of ./vendor/bin/phpunit
 vim.api.nvim_create_user_command('RunLaravelTestFileDocker', function(_)
   require('neotest').setup({
+    diagnostic= {enabled=true},
     adapters = {
       require('neotest-phpunit')({
         get_phpunit_cmd = function()
@@ -684,10 +687,17 @@ vim.api.nvim_create_user_command('RunLaravelTestFileDocker', function(_)
       })
     },
   })
-
-  require("neotest").run.run(vim.fn.expand("%"))
-
+  -- require("neotest").run.run(vim.fn.expand("%"))
 end, { desc = 'Run test file with docker' })
+
+vim.keymap.set('n', '<leader>tl', ':RunLaravelTestFileDocker<CR>', { silent = true, desc='Toggle laravel docker test' })
+vim.keymap.set('n', '<leader>tm', function() vim.cmd("lua require('neotest').run.run()") end, { desc = "Test single method" })
+vim.keymap.set('n', '<leader>tf', function() vim.cmd("lua require('neotest').run.run(vim.fn.expand('%'))") end, { desc = "Test file" })
+vim.keymap.set('n', '<F10>', function() vim.cmd("lua require('neotest').summary.toggle()") end, { desc = "Test file" })
+
+
+-- vim.keymap.set_keymap('n', '<leader>tr', ':RunLaravelTestFileDocker<CR>', { silent = true })
+
 
 
 -- The line beneath this is called `modeline`. See `:help modeline`
