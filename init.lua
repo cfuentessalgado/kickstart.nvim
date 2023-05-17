@@ -257,6 +257,9 @@ require('lazy').setup({
       'olimorris/neotest-phpunit',
     },
   },
+  {
+    'mbbill/undotree',
+  },
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
@@ -694,7 +697,7 @@ vim.keymap.set('n', '<leader>tl', ':RunLaravelTestFileDocker<CR>', { silent = tr
 vim.keymap.set('n', '<leader>tm', function() vim.cmd("lua require('neotest').run.run()") end, { desc = "Test single method" })
 vim.keymap.set('n', '<leader>tf', function() vim.cmd("lua require('neotest').run.run(vim.fn.expand('%'))") end, { desc = "Test file" })
 vim.keymap.set('n', '<F10>', function() vim.cmd("lua require('neotest').summary.toggle()") end, { desc = "Test file" })
-
+vim.keymap.set('n', '<leader>ut', vim.cmd.UndotreeToggle, { desc = "Toggle undotree" })
 
 -- vim.keymap.set_keymap('n', '<leader>tr', ':RunLaravelTestFileDocker<CR>', { silent = true })
 
