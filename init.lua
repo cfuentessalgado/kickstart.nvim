@@ -111,6 +111,15 @@ require('lazy').setup({
   -- Useful plugin to show you pending keybinds.
   { 'folke/which-key.nvim', opts = {} },
   {
+    "folke/todo-comments.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    }
+  },
+  {
     'akinsho/toggleterm.nvim',
     version = "*",
     opts = {
@@ -179,15 +188,17 @@ require('lazy').setup({
     },
   },
 
-  { -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
-    -- priority = 1000,
+  {
+    "folke/tokyonight.nvim",
+    lazy = true,
+    priority = 1000,
+    -- opts = {
+    --   transparent = true,
+    -- },
     -- config = function()
-    --   vim.cmd.colorscheme 'onedark'
+    --   vim.cmd.colorscheme 'tokyonight'
     -- end,
   },
-  { "catppuccin/nvim", name = "catppuccin" },
-
   { -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
     -- See `:help lualine.txt`
@@ -240,13 +251,6 @@ require('lazy').setup({
 
   {
     "windwp/nvim-autopairs",
-  },
-  {
-    'rebelot/kanagawa.nvim',
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'catppuccin'
-    end,
   },
   {
     "nvim-neotest/neotest",
@@ -358,8 +362,7 @@ local options = {
   cmdheight = 1,
   winbar = "%= %m%f",
   -- background = "dark",
-  -- updatetime = 50,
-  --colorcolumn = "80",
+  -- colorcolumn = "80",
 }
 
 vim.opt.isfname:append("@-@")
@@ -681,7 +684,7 @@ vim.api.nvim_command('autocmd BufNewFile,BufRead *.blade.php set syntax=html')
 -- create user command that setups neotest-php with the binary phpunit instead of ./vendor/bin/phpunit
 vim.api.nvim_create_user_command('RunLaravelTestFileDocker', function(_)
   require('neotest').setup({
-    diagnostic= {enabled=true},
+    diagnostic = { enabled = true },
     adapters = {
       require('neotest-phpunit')({
         get_phpunit_cmd = function()
@@ -693,15 +696,25 @@ vim.api.nvim_create_user_command('RunLaravelTestFileDocker', function(_)
   -- require("neotest").run.run(vim.fn.expand("%"))
 end, { desc = 'Run test file with docker' })
 
-vim.keymap.set('n', '<leader>tl', ':RunLaravelTestFileDocker<CR>', { silent = true, desc='Toggle laravel docker test' })
-vim.keymap.set('n', '<leader>tm', function() vim.cmd("lua require('neotest').run.run()") end, { desc = "Test single method" })
-vim.keymap.set('n', '<leader>tf', function() vim.cmd("lua require('neotest').run.run(vim.fn.expand('%'))") end, { desc = "Test file" })
+vim.keymap.set('n', '<leader>tl', ':RunLaravelTestFileDocker<CR>', { silent = true, desc = 'Toggle laravel docker test' })
+vim.keymap.set('n', '<leader>tm', function() vim.cmd("lua require('neotest').run.run()") end,
+  { desc = "Test single method" })
+vim.keymap.set('n', '<leader>tf', function() vim.cmd("lua require('neotest').run.run(vim.fn.expand('%'))") end,
+  { desc = "Test file" })
 vim.keymap.set('n', '<F10>', function() vim.cmd("lua require('neotest').summary.toggle()") end, { desc = "Test file" })
 vim.keymap.set('n', '<leader>ut', vim.cmd.UndotreeToggle, { desc = "Toggle undotree" })
 
 -- vim.keymap.set_keymap('n', '<leader>tr', ':RunLaravelTestFileDocker<CR>', { silent = true })
 
+require("tokyonight").setup({
+  -- your configuration comes here
+  -- or leave it empty to use the default settings
+  style = "storm", -- The theme comes in three styles, `storm`, `moon`, a darker variant `night` and `day`
+  light_style = "day", -- The theme is used when the background is set to light
+  transparent = true, -- Enable this to disable setting the background color
+  terminal_colors = true, -- Configure the colors used when opening a `:terminal` in Neovim
+})
 
-
+vim.cmd('colorscheme tokyonight')
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
