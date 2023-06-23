@@ -578,6 +578,7 @@ local servers = {
   -- pyright = {},
   -- rust_analyzer = {},
   -- tsserver = {},
+  intelephense = {},
 
   lua_ls = {
     Lua = {
