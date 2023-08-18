@@ -74,6 +74,7 @@ require('lazy').setup({
 
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
+  'nvim-telescope/telescope-ui-select.nvim',
 
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
@@ -86,7 +87,7 @@ require('lazy').setup({
 
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {}, tag = 'legacy' },
+      { 'j-hui/fidget.nvim',       opts = {},    tag = 'legacy' },
 
       -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
@@ -190,7 +191,10 @@ require('lazy').setup({
       end
     },
   },
-
+  {
+    'Mofiqul/dracula.nvim'
+  },
+  { 'rose-pine/neovim',     name = 'rose-pine' },
   {
     "folke/tokyonight.nvim",
     lazy = true,
@@ -226,7 +230,7 @@ require('lazy').setup({
   },
 
   -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
+  { 'numToStr/Comment.nvim',         opts = {} },
 
   -- Fuzzy Finder (files, lsp, etc)
   { 'nvim-telescope/telescope.nvim', version = '*', dependencies = { 'nvim-lua/plenary.nvim' } },
@@ -266,6 +270,31 @@ require('lazy').setup({
   },
   {
     'mbbill/undotree',
+  },
+  -- lazy.nvim
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {
+      -- add any options here
+    },
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      "MunifTanjim/nui.nvim",
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      "rcarriga/nvim-notify",
+    }
+  },
+  {
+    "folke/trouble.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
   },
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
@@ -314,7 +343,6 @@ vim.o.smartcase = true
 vim.wo.signcolumn = 'yes'
 
 -- Decrease update time
-vim.o.updatetime = 250
 vim.o.timeout = true
 vim.o.timeoutlen = 300
 
@@ -324,37 +352,37 @@ vim.o.completeopt = 'menuone,noselect'
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 local options = {
-  backup = false, -- creates a backup file
-  clipboard = "unnamedplus", -- allows neovim to access the system clipboard
+  backup = false,                          -- creates a backup file
+  clipboard = "unnamedplus",               -- allows neovim to access the system clipboard
   completeopt = { "menuone", "noselect" }, -- mostly just for cmp
   -- conceallevel = 0, -- so that `` is visible in markdown files
-  fileencoding = "utf-8", -- the encoding written to a file
-  ignorecase = true, -- ignore case in search patterns
-  mouse = "a", -- a = all mouse events nvi = normal, visual, insert
-  pumheight = 10, -- pop up menu height
-  showmode = false, -- we don't need to see things like -- INSERT -- anymore
-  showtabline = 0, -- always show tabs 2 yes 0 no
-  smartcase = true, -- smart case
-  smartindent = true, -- make indenting smarter again
-  splitbelow = true, -- force all horizontal splits to go below current window
-  splitright = true, -- force all vertical splits to go to the right of current window
+  fileencoding = "utf-8",                  -- the encoding written to a file
+  ignorecase = true,                       -- ignore case in search patterns
+  mouse = "a",                             -- a = all mouse events nvi = normal, visual, insert
+  pumheight = 10,                          -- pop up menu height
+  showmode = false,                        -- we don't need to see things like -- INSERT -- anymore
+  showtabline = 0,                         -- always show tabs 2 yes 0 no
+  smartcase = true,                        -- smart case
+  smartindent = true,                      -- make indenting smarter again
+  splitbelow = true,                       -- force all horizontal splits to go below current window
+  splitright = true,                       -- force all vertical splits to go to the right of current window
   -- termguicolors = true,                    -- set term gui colors (most terminals support this)
-  timeoutlen = 100, -- time to wait for a mapped sequence to complete (in milliseconds)
-  updatetime = 50, -- faster completion (4000ms default)
-  writebackup = false, -- if a file is being edited by another program (or was written to file while editing with another program), it is not allowed to be edited
-  expandtab = true, -- convert tabs to spaces
-  cursorline = true, -- highlight the current line
-  number = true, -- set numbered lines
-  numberwidth = 2, -- set number column width to 2 {default 4}
-  signcolumn = "yes", -- always show the sign column, otherwise it would shift the text each time
-  wrap = false, -- display lines as one long line
+  timeoutlen = 100,                        -- time to wait for a mapped sequence to complete (in milliseconds)
+  updatetime = 0,                          -- faster completion (4000ms default)
+  writebackup = false,                     -- if a file is being edited by another program (or was written to file while editing with another program), it is not allowed to be edited
+  expandtab = true,                        -- convert tabs to spaces
+  cursorline = true,                       -- highlight the current line
+  number = true,                           -- set numbered lines
+  numberwidth = 2,                         -- set number column width to 2 {default 4}
+  signcolumn = "yes",                      -- always show the sign column, otherwise it would shift the text each time
+  wrap = false,                            -- display lines as one long line
   sidescrolloff = 8,
   nu = true,
   -- guicursor = "",
   relativenumber = true,
-  -- tabstop = 4,
-  -- softtabstop = 4,
-  -- shiftwidth = 4,
+  tabstop = 4,
+  softtabstop = 4,
+  shiftwidth = 4,
   swapfile = false,
   undodir = os.getenv("HOME") .. "/.vim/undodir",
   undofile = true,
@@ -388,6 +416,14 @@ vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = tr
 vim.api.nvim_set_keymap("v", "K", ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("v", "J", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("v", "<leader>y", '"+y', { noremap = true, silent = true })
+
+-- Lua
+vim.keymap.set("n", "<leader>xx", function() require("trouble").toggle() end)
+vim.keymap.set("n", "<leader>xw", function() require("trouble").toggle("workspace_diagnostics") end)
+vim.keymap.set("n", "<leader>xd", function() require("trouble").toggle("document_diagnostics") end)
+vim.keymap.set("n", "<leader>xq", function() require("trouble").open("quickfix") end)
+vim.keymap.set("n", "<leader>xl", function() require("trouble").open("loclist") end)
+vim.keymap.set("n", "gR", function() require("trouble").open("lsp_references") end)
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
@@ -430,6 +466,7 @@ require('telescope').setup {
 
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
+pcall(require("telescope").load_extension("ui-select"))
 
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
@@ -713,10 +750,29 @@ vim.keymap.set('n', '<leader>ut', vim.cmd.UndotreeToggle, { desc = "Toggle undot
 require("tokyonight").setup({
   -- your configuration comes here
   -- or leave it empty to use the default settings
-  style = "storm", -- The theme comes in three styles, `storm`, `moon`, a darker variant `night` and `day`
-  light_style = "day", -- The theme is used when the background is set to light
-  transparent = true, -- Enable this to disable setting the background color
+  style = "storm",        -- The theme comes in three styles, `storm`, `moon`, a darker variant `night` and `day`
+  light_style = "day",    -- The theme is used when the background is set to light
+  transparent = true,     -- Enable this to disable setting the background color
   terminal_colors = true, -- Configure the colors used when opening a `:terminal` in Neovim
+})
+
+require("noice").setup({
+  lsp = {
+    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+    override = {
+      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+      ["vim.lsp.util.stylize_markdown"] = true,
+      ["cmp.entry.get_documentation"] = true,
+    },
+  },
+  -- you can enable a preset for easier configuration
+  presets = {
+    bottom_search = true,         -- use a classic bottom cmdline for search
+    command_palette = true,       -- position the cmdline and popupmenu together
+    long_message_to_split = true, -- long messages will be sent to a split
+    inc_rename = false,           -- enables an input dialog for inc-rename.nvim
+    lsp_doc_border = true,        -- add a border to hover docs and signature help
+  },
 })
 
 vim.cmd('colorscheme tokyonight')
