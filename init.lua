@@ -71,10 +71,16 @@ require('lazy').setup({
   -- Git related plugins
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
+  {
+  "folke/tokyonight.nvim",
+  lazy = false,
+  priority = 1000,
+  opts = {},
+},
 
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
-  'nvim-telescope/telescope-ui-select.nvim',
+  -- 'nvim-telescope/telescope-ui-select.nvim',
 
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
@@ -191,21 +197,6 @@ require('lazy').setup({
       end
     },
   },
-  {
-    'Mofiqul/dracula.nvim'
-  },
-  { 'rose-pine/neovim',     name = 'rose-pine' },
-  {
-    "folke/tokyonight.nvim",
-    lazy = true,
-    priority = 1000,
-    -- opts = {
-    --   transparent = true,
-    -- },
-    -- config = function()
-    --   vim.cmd.colorscheme 'tokyonight'
-    -- end,
-  },
   { -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
     -- See `:help lualine.txt`
@@ -219,16 +210,7 @@ require('lazy').setup({
     },
   },
 
-  { -- Add indentation guides even on blank lines
-    'lukas-reineke/indent-blankline.nvim',
-    -- Enable `lukas-reineke/indent-blankline.nvim`
-    -- See `:help indent_blankline.txt`
-    opts = {
-      char = '┊',
-      show_trailing_blankline_indent = false,
-    },
-  },
-
+  -- { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim',         opts = {} },
 
@@ -296,6 +278,14 @@ require('lazy').setup({
       -- refer to the configuration section below
     },
   },
+  {
+    "sourcegraph/sg.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+
+    -- If you have a recent version of lazy.nvim, you don't need to add this!
+    build = "nvim -l build/init.lua",
+  },
+  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
@@ -392,7 +382,7 @@ local options = {
   scrolloff = 8,
   cmdheight = 1,
   winbar = "%= %m%f",
-  -- background = "dark",
+  background = "dark",
   -- colorcolumn = "80",
 }
 
@@ -435,7 +425,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = highlight_group,
   pattern = '*',
 })
-
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
 require('telescope').setup {
@@ -466,7 +455,7 @@ require('telescope').setup {
 
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
-pcall(require("telescope").load_extension("ui-select"))
+-- pcall(require("telescope").load_extension("ui-select"))
 
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
@@ -556,6 +545,11 @@ require('nvim-treesitter.configs').setup {
   },
 }
 
+require("catppuccin").setup({
+    transparent_background = true,
+})
+
+vim.cmd('colorscheme tokyonight')
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
@@ -618,7 +612,11 @@ local servers = {
   -- pyright = {},
   rust_analyzer = {},
   tsserver = {},
-  intelephense = {},
+  intelephense = {
+    files = { '*.php', '*.ctp' },
+  },
+  bashls = {},
+  html = {},
 
   lua_ls = {
     Lua = {
@@ -745,16 +743,15 @@ vim.keymap.set('n', '<leader>tf', function() vim.cmd("lua require('neotest').run
 vim.keymap.set('n', '<F10>', function() vim.cmd("lua require('neotest').summary.toggle()") end, { desc = "Test file" })
 vim.keymap.set('n', '<leader>ut', vim.cmd.UndotreeToggle, { desc = "Toggle undotree" })
 
+
+-- set leader hjkl to move between windows
+vim.keymap.set('n', '<leader>hh', '<C-w>h', { silent = true })
+vim.keymap.set('n', '<leader>jj', '<C-w>j', { silent = true })
+vim.keymap.set('n', '<leader>kk', '<C-w>k', { silent = true })
+vim.keymap.set('n', '<leader>ll', '<C-w>l', { silent = true })
+
 -- vim.keymap.set_keymap('n', '<leader>tr', ':RunLaravelTestFileDocker<CR>', { silent = true })
 
-require("tokyonight").setup({
-  -- your configuration comes here
-  -- or leave it empty to use the default settings
-  style = "storm",        -- The theme comes in three styles, `storm`, `moon`, a darker variant `night` and `day`
-  light_style = "day",    -- The theme is used when the background is set to light
-  transparent = true,     -- Enable this to disable setting the background color
-  terminal_colors = true, -- Configure the colors used when opening a `:terminal` in Neovim
-})
 
 require("noice").setup({
   lsp = {
@@ -765,6 +762,9 @@ require("noice").setup({
       ["cmp.entry.get_documentation"] = true,
     },
   },
+  messages= {
+    enabled = false,
+  },
   -- you can enable a preset for easier configuration
   presets = {
     bottom_search = true,         -- use a classic bottom cmdline for search
@@ -774,7 +774,17 @@ require("noice").setup({
     lsp_doc_border = true,        -- add a border to hover docs and signature help
   },
 })
+-- Sourcegraph configuration. All keys are optional
+require("sg").setup {
+  -- Pass your own custom attach function
+  --    If you do not pass your own attach function, then the following maps are provide:
+  --        - gd -> goto definition
+  --        - gr -> goto references
+  on_attach = on_attach
+}
 
-vim.cmd('colorscheme tokyonight')
+-- set .ctp files as php
+vim.api.nvim_command('autocmd BufNewFile,BufRead *.ctp set syntax=php')
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
